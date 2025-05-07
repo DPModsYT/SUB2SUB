@@ -1,37 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Unlock Content</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #fffbe6;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    a {
+      display: block;
+      margin: 10px 0;
+      color: blue;
+      font-weight: bold;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #218838;
+    }
+  </style>
 </head>
 <body>
-  <h2>Subscribe to Unlock</h2>
+  <h2>🔓 Unlock Your Content</h2>
   <div id="instructions">Loading...</div>
   <button onclick="unlock()">I Subscribed</button>
 
   <script>
-    const url = new URL(window.location.href);
-    const target = url.searchParams.get("target");
-    const channel = url.searchParams.get("channel");
-    const video = url.searchParams.get("video");
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get("target");
+    const channel = params.get("channel");
+    const video = params.get("video");
 
-    if (!target || !channel) {
-      document.getElementById("instructions").innerHTML = "Invalid unlock link.";
-    } else {
-      let html = `
-        <p>1. Subscribe to the channel: <a href="${decodeURIComponent(channel)}" target="_blank">${decodeURIComponent(channel)}</a></p>
-      `;
-      if (video) {
-        html += `<p>2. Like the video: <a href="${decodeURIComponent(video)}" target="_blank">${decodeURIComponent(video)}</a></p>`;
-      }
-      html += `<p>Then click the button below to unlock your content.</p>`;
-      document.getElementById("instructions").innerHTML = html;
-    }
+    const decodedChannel = decodeURIComponent(channel || "");
+    const decodedVideo = decodeURIComponent(video || "");
+    const decodedTarget = decodeURIComponent(target || "");
 
-    function unlock() {
-      if (target) {
-        window.location.href = decodeURIComponent(target);
-      }
-    }
-  </script>
-</body>
-</html>
+    const container = document.getElementBy
