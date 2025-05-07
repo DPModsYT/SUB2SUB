@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sub2Unlock Generator</title>
+</head>
+<body>
+  <h2>Generate Your Sub2Unlock Link</h2>
+
+  <input type="url" id="target" placeholder="Link to protect" required><br><br>
+  <input type="url" id="channel" placeholder="YouTube Channel URL" required><br><br>
+  <input type="url" id="video" placeholder="YouTube Video URL (optional)"><br><br>
+
+  <button onclick="generateLink()">Generate Link</button>
+
+  <p id="result"></p>
+
+  <script>
+    function generateLink() {
+      const target = encodeURIComponent(document.getElementById("target").value);
+      const channel = encodeURIComponent(document.getElementById("channel").value);
+      const video = encodeURIComponent(document.getElementById("video").value);
+
+      if (!target || !channel) {
+        alert("Target and Channel are required!");
+        return;
+      }
+
+      const url = `unlock.html?target=${target}&channel=${channel}${video ? `&video=${video}` : ''}`;
+      const fullUrl = location.origin + '/' + url;
+
+      document.getElementById("result").innerHTML = `
+        <strong>Your Unlock Link:</strong><br>
+        <a href="${fullUrl}" target="_blank">${fullUrl}</a>
+      `;
+    }
+  </script>
+</body>
+</html>
