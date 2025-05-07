@@ -3,133 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unlock Content | SubZunlock</title>
+    <title>🔓 Content Unlock Karein</title>
     <style>
-        :root {
-            --bg-dark: #1a1a1a;
-            --text-dark: #ffffff;
-            --accent: #ff4757;
-            --card-bg: #2d2d2d;
-        }
-
         body {
-            font-family: 'Arial', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-dark);
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
-
-        .requirements-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+        
+        .unlock-steps {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
             margin: 20px 0;
         }
-
-        .req-item {
+        
+        .step-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px;
-            background: #ffffff0d;
+            gap: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #3a3a3a;
             border-radius: 5px;
         }
-
+        
         button {
-            background: var(--accent);
+            background: #ff4757;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 15px 30px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             width: 100%;
         }
-
+        
         .locked-content {
             display: none;
-            margin-top: 20px;
             text-align: center;
+            padding: 20px;
+        }
+        
+        input[type="text"] {
+            padding: 10px;
+            width: 200px;
+            background: #4a4a4a;
+            border: 1px solid #666;
+            color: white;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Unlock Premium Content</h1>
-    <p>Complete these requirements to access the content:</p>
+    <h1>🔒 Premium Content Locked</h1>
+    <p>Content Access Karne Ke Liye Neeche Diye Gaye Steps Complete Karein:</p>
 
-    <div id="requirementsContainer" class="requirements-grid"></div>
+    <div class="unlock-steps" id="requirementsList">
+        <!-- Yahan Requirements Ayengi -->
+    </div>
 
-    <button id="unlockButton" disabled>UNLOCK CONTENT</button>
+    <button id="unlockBtn" disabled>⏳ Verification Ho Raha Hai...</button>
     
-    <div id="unlockedContent" class="locked-content">
-        <h2>Content Unlocked! Redirecting...</h2>
+    <div class="locked-content" id="unlockedContent">
+        <h2>🎉 Congratulations! Content Unlocked!</h2>
+        <p>5 Second Mein Redirect Ho Rahe Hain...</p>
     </div>
 
     <script>
-        // Get URL parameters
-        const params = new URLSearchParams(window.location.search);
-        const youtubeUrl = decodeURIComponent(params.get('yt'));
-        const destUrl = decodeURIComponent(params.get('dest'));
-        const requirements = params.get('req')?.split(',') || [];
+        // URL Parameters Se Data Nikalna
+        const urlParams = new URLSearchParams(window.location.search);
+        const ytURL = decodeURIComponent(urlParams.get('yt') || '');
+        const destURL = decodeURIComponent(urlParams.get('dest') || '');
+        const requirements = (urlParams.get('req') || '').split(',');
 
-        // Extract YouTube Channel ID
-        const channelId = youtubeUrl.match(/channel\/([a-zA-Z0-9_-]+)/)?.[1] || '';
-
-        // Create requirement checkboxes
-        const requirementsContainer = document.getElementById('requirementsContainer');
-        const requirementConfig = {
-            subscribe: { text: 'Subscribe to YouTube Channel', mandatory: true },
-            secondSub: { text: 'Subscribe to Second Channel', mandatory: true },
-            likeSub: { text: 'Like & Subscribe', mandatory: true },
-            bell: { text: 'Hit Bell Icon', mandatory: true },
-            likeComment: { text: 'Like & Comment', mandatory: false },
-            followInsta: { text: 'Follow Instagram', mandatory: false },
-            joinTelegram: { text: 'Join Telegram', mandatory: false },
-            joinDiscord: { text: 'Join Discord', mandatory: false }
+        // Requirements Ke Liye Fields Banana
+        const requirementsMap = {
+            subscribe: {
+                text: "YouTube Channel Subscribe Karna",
+                input: "",
+                verify: async () => true // Demo ke liye
+            },
+            like: {
+                text: "Video Ko Like Karna",
+                input: "",
+                verify: async () => true
+            },
+            instagram: {
+                text: "Instagram Follow Karna:",
+                input: `<input type="text" placeholder="Apna Instagram ID">`,
+                verify: async () => true
+            },
+            telegram: {
+                text: "Telegram Group Join Karna:",
+                input: `<input type="text" placeholder="Apna Telegram Username">`,
+                verify: async () => true
+            },
+            discord: {
+                text: "Discord Server Join Karna:",
+                input: `<input type="text" placeholder="Apna Discord ID">`,
+                verify: async () => true
+            }
         };
 
+        // Requirements Dikhana
         requirements.forEach(req => {
+            const config = requirementsMap[req] || {text: req};
             const div = document.createElement('div');
-            div.className = 'req-item';
+            div.className = 'step-item';
             div.innerHTML = `
-                <input type="checkbox" id="${req}" disabled>
-                <label for="${req}">${requirementConfig[req]?.text || req}</label>
+                <input type="checkbox" disabled>
+                <div>
+                    <label>${config.text}</label>
+                    ${config.input || ''}
+                </div>
             `;
-            requirementsContainer.appendChild(div);
+            document.getElementById('requirementsList').appendChild(div);
         });
 
-        // Unlock logic
-        let completedRequirements = 0;
-        
-        document.getElementById('unlockButton').addEventListener('click', () => {
-            window.location.href = destUrl;
-        });
+        // Verification Process
+        async function sabVerifyKaro() {
+            const allCheckboxes = document.querySelectorAll('.step-item input');
+            
+            // Demo Verification (3 Second Wait)
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // Sab Checkboxes Ko Tick Karna
+            allCheckboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
 
-        function checkRequirements() {
-            // Add your verification logic here for each requirement
-            // For demo purposes, auto-complete after 2 seconds
+            // Unlock Button Ko Enable Karna
+            document.getElementById('unlockBtn').disabled = false;
+            document.getElementById('unlockBtn').innerHTML = "🔓 CONTENT UNLOCK KARO";
+            
+            // 5 Second Baad Redirect
             setTimeout(() => {
-                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                    checkbox.checked = true;
-                });
-                completedRequirements = requirements.length;
-                updateUnlockButton();
-            }, 2000);
+                window.location.href = destURL;
+            }, 5000);
         }
 
-        function updateUnlockButton() {
-            const unlockButton = document.getElementById('unlockButton');
-            if (completedRequirements >= requirements.length) {
-                unlockButton.disabled = false;
-                unlockButton.textContent = "ACCESS CONTENT NOW";
-                document.getElementById('unlockedContent').style.display = 'block';
-            }
-        }
-
-        // Initialize verification
-        checkRequirements();
+        // Shuru Karein Verification
+        sabVerifyKaro();
     </script>
 </body>
 </html>
