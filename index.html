@@ -2,59 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sub2Unlock Generator</title>
   <style>
     body {
+      background: #121212;
+      color: white;
       font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: #1e1e1e;
+      padding: 2rem;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      text-align: center;
     }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 1em;
+    input, button, select {
+      padding: 0.5rem 1rem;
+      margin: 0.5rem 0;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: none;
     }
-    a {
-      word-break: break-all;
+    input {
+      width: 300px;
+    }
+    button {
+      background: #00c853;
+      color: white;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 1rem;
+      word-break: break-word;
+    }
+    .copy-btn {
+      background: #0288d1;
+      margin-left: 10px;
     }
   </style>
 </head>
 <body>
-  <h2>Generate Your Sub2Unlock Link</h2>
-
-  <input type="url" id="target" placeholder="🔒 Link to protect (required)">
-  <input type="url" id="channel" placeholder="▶️ YouTube Channel URL (required)">
-  <input type="url" id="video" placeholder="👍 YouTube Video URL (optional)">
-  <button onclick="generateLink()">Generate Unlock Link</button>
-
-  <p id="result"></p>
+  <div class="box">
+    <h2>Generate Sub2Unlock Link</h2>
+    <input type="text" id="youtubeLink" placeholder="YouTube Video URL" />
+    <input type="text" id="telegramLink" placeholder="Telegram Group URL" />
+    <input type="text" id="targetLink" placeholder="Final Target URL" />
+    <br>
+    <button onclick="generateLink()">Generate Link</button>
+    <div id="result"></div>
+  </div>
 
   <script>
     function generateLink() {
-      const target = document.getElementById("target").value.trim();
-      const channel = document.getElementById("channel").value.trim();
-      const video = document.getElementById("video").value.trim();
+      const yt = document.getElementById('youtubeLink').value.trim();
+      const tg = document.getElementById('telegramLink').value.trim();
+      const target = document.getElementById('targetLink').value.trim();
+      if (!yt || !tg || !target) return alert('Please fill all fields');
 
-      if (!target || !channel) {
-        alert("Target link and YouTube channel are required!");
-        return;
-      }
+      const params = new URLSearchParams({
+        youtube: yt,
+        telegram: tg,
+        target: target
+      });
 
-      const encodedTarget = encodeURIComponent(target);
-      const encodedChannel = encodeURIComponent(channel);
-      const encodedVideo = video ? "&video=" + encodeURIComponent(video) : "";
+      const unlockURL = `unlock.html?${params.toString()}`;
+      const fullLink = `${window.location.origin}/${unlockURL}`;
 
-      const unlockUrl = `${location.origin}${location.pathname.replace('index.html', '')}unlock.html?target=${encodedTarget}&channel=${encodedChannel}${encodedVideo}`;
-
-      document.getElementById("result").innerHTML = `
-        <strong>✅ Your Unlock Link:</strong><br>
-        <a href="${unlockUrl}" target="_blank">${unlockUrl}</a>
+      document.getElementById('result').innerHTML = `
+        Your Unlock URL:<br>
+        <input id="unlockOutput" value="${fullLink}" readonly style="width:90%" />
+        <button class="copy-btn" onclick="copyLink()">Copy</button>
       `;
+    }
+
+    function copyLink() {
+      const input = document.getElementById('unlockOutput');
+      input.select();
+      document.execCommand('copy');
+      alert('Link copied!');
     }
   </script>
 </body>
