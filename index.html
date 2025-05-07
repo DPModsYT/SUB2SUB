@@ -1,108 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sub2Unlock Generator</title>
-  <style>
-    body {
-      background: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .box {
-      background: #1e1e1e;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
-      text-align: center;
-    }
-    input, button {
-      padding: 0.5rem 1rem;
-      margin: 0.5rem 0;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: none;
-    }
-    input {
-      width: 300px;
-    }
-    button {
-      background: #00c853;
-      color: white;
-      cursor: pointer;
-    }
-    #result {
-      margin-top: 1rem;
-      word-break: break-word;
-    }
-    .copy-btn {
-      background: #0288d1;
-      margin-left: 10px;
-    }
-    small {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #aaa;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SubZunlock Generator V2.0</title>
+    <style>
+        :root {
+            --bg-dark: #1a1a1a;
+            --text-dark: #ffffff;
+            --accent: #ff4757;
+            --card-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-dark);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .config-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .req-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: #ffffff0d;
+            border-radius: 5px;
+        }
+
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #ffffff14;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .generated-link {
+            word-break: break-all;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <div class="box">
-    <h2>Generate Sub2Unlock Link</h2>
-    <input type="text" id="channelLink" placeholder="YouTube Channel URL (Required)" />
-    <small>Required: User must subscribe</small>
+    <div class="header">
+        <h1>SubZunlock V2.0 Generator</h1>
+        <p>Get All Premium Benefits for Free</p>
+    </div>
 
-    <input type="text" id="videoLike" placeholder="YouTube Video URL for Like (Optional)" />
-    <input type="text" id="videoComment" placeholder="YouTube Video URL for Comment (Optional)" />
-    <input type="text" id="telegramLink" placeholder="Telegram Group URL (Optional)" />
-    <input type="text" id="targetLink" placeholder="Final Target URL (Required)" />
+    <div class="config-card">
+        <h3>Configuration</h3>
+        <input type="url" id="youtubeUrl" placeholder="Enter YouTube Channel URL">
+        <input type="url" id="destinationUrl" placeholder="Enter Destination/File URL">
+    </div>
 
-    <br>
-    <button onclick="generateLink()">Generate Link</button>
+    <div class="config-card">
+        <h3>Select Unlock Requirements</h3>
+        <div class="requirements-grid">
+            <label class="req-item">
+                <input type="checkbox" class="req-checkbox" value="subscribe">
+                Subscribe
+            </label>
+            <label class="req-item">
+                <input type="checkbox" class="req-checkbox" value="secondSub">
+                2nd Subscribe
+            </label>
+            <label class="req-item">
+                <input type="checkbox" class="req-checkbox" value="likeSub">
+                Like & Subscribe
+            </label>
+            <label class="req-item">
+                <input type="checkbox" class="req-checkbox" value="bell">
+                Sub & Hit Bell
+            </label>
+            <label class="req-item">
+                <input type="checkbox" class="req-checkbox" value="likeComment">
+                Like & Comment
+            </label>
+            <label class="req-item">
+                <input type="checkbox" class="req-checkbox" value="followInsta">
+                Follow Instagram
+            </label>
+            <label class="req-item">
+                <input type="checkbox" class="req-checkbox" value="joinTelegram">
+                Join Telegram
+            </label>
+            <label class="req-item">
+                <input type="checkbox" class="req-checkbox" value="joinDiscord">
+                Join Discord
+            </label>
+        </div>
+    </div>
 
-    <div id="result"></div>
-  </div>
+    <button onclick="generateLink()">Generate Unlock Link</button>
+    <div id="linkContainer" class="generated-link"></div>
 
-  <script>
-    function generateLink() {
-      const ytch = document.getElementById('channelLink').value.trim();
-      const ytlike = document.getElementById('videoLike').value.trim();
-      const ytcomment = document.getElementById('videoComment').value.trim();
-      const tg = document.getElementById('telegramLink').value.trim();
-      const target = document.getElementById('targetLink').value.trim();
-
-      if (!ytch || !target) return alert('You must enter at least channel URL and target URL.');
-
-      const params = new URLSearchParams();
-      params.set('channel', ytch);
-      if (ytlike) params.set('like', ytlike);
-      if (ytcomment) params.set('comment', ytcomment);
-      if (tg) params.set('telegram', tg);
-      params.set('target', target);
-
-      const unlockURL = `unlock.html#${params.toString()}`;
-      const fullLink = `${window.location.origin}/${unlockURL}`;
-
-      document.getElementById('result').innerHTML = `
-        Your Unlock URL:<br>
-        <input id="unlockOutput" value="${fullLink}" readonly style="width:90%" />
-        <button class="copy-btn" onclick="copyLink()">Copy</button>
-      `;
-    }
-
-    function copyLink() {
-      const input = document.getElementById('unlockOutput');
-      input.select();
-      document.execCommand('copy');
-      alert('Link copied!');
-    }
-  </script>
+    <script>
+        function generateLink() {
+            const baseUrl = window.location.href.replace('index.html', 'unlock.html');
+            const youtubeUrl = encodeURIComponent(document.getElementById('youtubeUrl').value);
+            const destUrl = encodeURIComponent(document.getElementById('destinationUrl').value);
+            
+            const requirements = Array.from(document.querySelectorAll('.req-checkbox:checked'))
+                                .map(cb => cb.value).join(',');
+            
+            const generatedUrl = `${baseUrl}?yt=${youtubeUrl}&dest=${destUrl}&req=${requirements}`;
+            
+            document.getElementById('linkContainer').innerHTML = `
+                <strong>Generated Unlock Link:</strong><br>
+                <a href="${generatedUrl}" target="_blank">${generatedUrl}</a>
+            `;
+        }
+    </script>
 </body>
 </html>
