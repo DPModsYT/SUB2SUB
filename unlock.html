@@ -74,8 +74,8 @@
     </div>
   </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
+  <script> 
+    const params = new URLSearchParams(window.location.hash.slice(1));
     const channel = params.get('channel');
     const like = params.get('like');
     const comment = params.get('comment');
