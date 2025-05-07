@@ -3,159 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sub2Unlock Generator - V2.0</title>
+    <title>Custom Link Generator</title>
     <style>
-        /* Dark Theme Styling */
         body {
             font-family: Arial, sans-serif;
-            background: #1a1a1a;
-            color: #ffffff;
-            max-width: 800px;
-            margin: 0 auto;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
-        
-        .header {
+        .container h1 {
             text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .config-box {
-            background: #2d2d2d;
-            padding: 20px;
-            border-radius: 10px;
             margin-bottom: 20px;
         }
-        
-        .requirements-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 20px 0;
+        label {
+            display: block;
+            margin: 10px 0 5px;
         }
-        
-        .req-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: #3a3a3a;
-            border-radius: 5px;
-        }
-        
-        input[type="url"], input[type="text"] {
+        input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #4a4a4a;
-            border: 1px solid #666;
-            color: white;
-            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-        
         button {
-            background: #ff4757;
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-            width: 100%;
         }
-        
-        .generated-link-box {
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
             margin-top: 20px;
-            padding: 15px;
-            background: #2d2d2d;
-            border-radius: 5px;
+            text-align: center;
+        }
+        #generatedLink {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            word-wrap: break-word;
+        }
+        .copy-btn {
+            background-color: #28a745;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🚀 Sub2Unlock Generator 2.0</h1>
-        <p>Apne Content Ko Lock Karo, Free Me Premium Benefits Pao!</p>
-    </div>
+    <div class="container">
+        <h1>Custom Link Generator</h1>
+        <label for="youtubeChannel">YouTube Channel ID:</label>
+        <input type="text" id="youtubeChannel" placeholder="Enter your YouTube Channel ID">
 
-    <div class="config-box">
-        <h3>📌 Basic Settings</h3>
-        <input type="url" id="youtubeUrl" placeholder="YouTube Channel URL Daalo">
-        <input type="url" id="destUrl" placeholder="Destination/File URL Daalo">
-    </div>
+        <label for="destinationURL">Destination URL:</label>
+        <input type="text" id="destinationURL" placeholder="Enter your Destination URL">
 
-    <div class="config-box">
-        <h3>🔒 Unlock Conditions Select Karo</h3>
-        <div class="requirements-grid">
-            <label class="req-item">
-                <input type="checkbox" class="req-check" value="subscribe">
-                Subscribe Karna
-            </label>
-            <label class="req-item">
-                <input type="checkbox" class="req-check" value="like">
-                Video Like Karna
-            </label>
-            <label class="req-item">
-                <input type="checkbox" class="req-check" value="comment">
-                Comment Karna
-            </label>
-            <label class="req-item">
-                <input type="checkbox" class="req-check" value="instagram">
-                Instagram Follow Karna
-            </label>
-            <label class="req-item">
-                <input type="checkbox" class="req-check" value="telegram">
-                Telegram Join Karna
-            </label>
-            <label class="req-item">
-                <input type="checkbox" class="req-check" value="discord">
-                Discord Join Karna
-            </label>
+        <label for="videoLink">Video Link (Optional):</label>
+        <input type="text" id="videoLink" placeholder="Enter your Video URL">
+
+        <button id="generateButton">Generate Link</button>
+
+        <div class="output">
+            <p><strong>Generated Link:</strong></p>
+            <div id="generatedLink">Your link will appear here</div>
+            <button class="copy-btn" id="copyButton" style="display: none;">Copy Link</button>
         </div>
     </div>
 
-    <button onclick="linkBanado()">🔗 Generate Unlock Link</button>
-    
-    <div class="generated-link-box" id="linkOutput">
-        <!-- Yahan Generated Link Ayega -->
-    </div>
-
     <script>
-        function linkBanado() {
-            // URLs Validate Karna
-            const ytURL = document.getElementById('youtubeUrl').value;
-            const destURL = document.getElementById('destUrl').value;
-            
-            if(!ytURL || !destURL) {
-                alert("Donno URLs Bharna Jaruri Hai!");
+        const generateButton = document.getElementById('generateButton');
+        const generatedLinkDiv = document.getElementById('generatedLink');
+        const copyButton = document.getElementById('copyButton');
+
+        generateButton.addEventListener('click', () => {
+            const youtubeChannel = document.getElementById('youtubeChannel').value;
+            const destinationURL = document.getElementById('destinationURL').value;
+            const videoLink = document.getElementById('videoLink').value;
+
+            if (!youtubeChannel || !destinationURL) {
+                alert('Please fill in both the YouTube Channel ID and Destination URL!');
                 return;
             }
 
-            // Requirements Collect Karna
-            const selectedChecks = Array.from(document.querySelectorAll('.req-check:checked'))
-                                    .map(checkbox => checkbox.value);
+            const generatedURL = `
+                https://your-page-url.com/subscribe?channel=${encodeURIComponent(youtubeChannel)}&redirect=${encodeURIComponent(destinationURL)}${videoLink ? `&video=${encodeURIComponent(videoLink)}` : ''}
+            `.trim();
 
-            // Final URL Banana
-            const baseURL = window.location.href.replace('index.html', '') + 'unlock.html';
-            const finalURL = `${baseURL}?yt=${encodeURIComponent(ytURL)}` + 
-                           `&dest=${encodeURIComponent(destURL)}` + 
-                           `&req=${selectedChecks.join(',')}`;
+            generatedLinkDiv.textContent = generatedURL;
+            copyButton.style.display = 'block';
+        });
 
-            // Link Dikhana
-            document.getElementById('linkOutput').innerHTML = `
-                <h4>✅ Link Tayyar Hai:</h4>
-                <input type="text" value="${finalURL}" readonly 
-                       style="width:100%; padding:10px; margin:10px 0;">
-                <button onclick="copyToClipboard('${finalURL}')">
-                    📋 Copy Link
-                </button>
-            `;
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text);
-            alert("Link Copy Ho Gaya! 🎉");
-        }
+        copyButton.addEventListener('click', () => {
+            const textToCopy = generatedLinkDiv.textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
     </script>
 </body>
 </html>
