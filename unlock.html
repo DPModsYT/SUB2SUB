@@ -2,52 +2,149 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Unlock Content</title>
+  <title>Unlock Link</title>
   <style>
     body {
+      background: #121212;
+      color: #fff;
       font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      background: #fffbe6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: #1e1e1e;
+      padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
       text-align: center;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     }
-    a {
-      display: block;
-      margin: 10px 0;
-      color: blue;
-      font-weight: bold;
+
+    h2 {
+      margin-bottom: 10px;
     }
-    button {
-      margin-top: 20px;
-      padding: 12px 24px;
-      font-size: 16px;
-      cursor: pointer;
-      background: #28a745;
+
+    p {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ff4444;
       color: white;
+      padding: 12px 20px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    button:hover {
-      background: #218838;
+
+    .btn:hover {
+      background: #e63939;
+    }
+
+    .btn.telegram {
+      background: #0088cc;
+    }
+
+    .btn.telegram:hover {
+      background: #007ab8;
+    }
+
+    .btn .icon {
+      margin-right: 10px;
+    }
+
+    progress {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      margin-top: 15px;
+      background: #333;
+    }
+
+    .unlock-btn {
+      margin-top: 20px;
+      width: 100%;
+      background: #555;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .unlock-btn.active {
+      background: #28a745;
+      color: #fff;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h2>🔓 Unlock Your Content</h2>
-  <div id="instructions">Loading...</div>
-  <button onclick="unlock()">I Subscribed</button>
+
+  <div class="card">
+    <h2>Unlock Link</h2>
+    <p>Complete the actions and unlock the link</p>
+
+    <button class="btn" onclick="markComplete(0)">
+      <span><strong>▶️ Subscribe On YouTube</strong></span>
+    </button>
+
+    <button class="btn" onclick="markComplete(1)">
+      <span><strong>👍 Like & Comment on Video</strong></span>
+    </button>
+
+    <button class="btn telegram" onclick="markComplete(2)">
+      <span><strong>📢 Join on Telegram</strong></span>
+    </button>
+
+    <progress id="progressBar" value="0" max="3"></progress>
+    <p id="progressText">unlock progress 0/3</p>
+
+    <button id="unlockBtn" class="unlock-btn" disabled>🔒 Unlock Link</button>
+  </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const target = params.get("target");
-    const channel = params.get("channel");
-    const video = params.get("video");
+    const actions = [false, false, false]; // 3 actions
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const unlockBtn = document.getElementById('unlockBtn');
 
-    const decodedChannel = decodeURIComponent(channel || "");
-    const decodedVideo = decodeURIComponent(video || "");
-    const decodedTarget = decodeURIComponent(target || "");
+    const url = new URLSearchParams(window.location.search);
+    const target = decodeURIComponent(url.get('target') || '');
 
-    const container = document.getElementBy
+    function markComplete(index) {
+      actions[index] = true;
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const completed = actions.filter(Boolean).length;
+      progressBar.value = completed;
+      progressText.innerText = `unlock progress ${completed}/3`;
+
+      if (completed === 3) {
+        unlockBtn.disabled = false;
+        unlockBtn.classList.add('active');
+        unlockBtn.innerText = '✅ Unlock Now';
+        unlockBtn.onclick = () => {
+          if (target) window.location.href = target;
+        };
+      }
+    }
+  </script>
+
+</body>
+</html>
