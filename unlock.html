@@ -4,147 +4,169 @@
   <meta charset="UTF-8">
   <title>Unlock Link</title>
   <style>
-    body {
-      background: #121212;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
     }
 
-    .card {
-      background: #1e1e1e;
-      padding: 30px;
-      border-radius: 10px;
+    body, html {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: #000;
+      color: #fff;
+    }
+
+    /* Fullscreen background video */
+    .video-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    /* Centered glass container */
+    .container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
       width: 90%;
       max-width: 400px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
     }
 
     h2 {
-      margin-bottom: 10px;
+      font-size: 1.8em;
+      margin-bottom: 0.5em;
     }
 
-    p {
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    .btn {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #ff4444;
+    .action-btn {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 1em;
+      font-weight: bold;
       color: white;
-      padding: 12px 20px;
       border: none;
       border-radius: 6px;
-      margin: 10px 0;
-      font-size: 15px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: 0.3s;
     }
 
-    .btn:hover {
-      background: #e63939;
-    }
+    .youtube { background: #ff0000; }
+    .youtube:hover { background: #cc0000; }
 
-    .btn.telegram {
-      background: #0088cc;
-    }
+    .comment { background: #e53935; }
+    .comment:hover { background: #c62828; }
 
-    .btn.telegram:hover {
-      background: #007ab8;
-    }
+    .telegram { background: #0088cc; }
+    .telegram:hover { background: #006fa1; }
 
-    .btn .icon {
-      margin-right: 10px;
-    }
-
-    progress {
+    .progress-bar {
       width: 100%;
-      height: 8px;
-      border-radius: 4px;
+      height: 6px;
+      background: #555;
+      border-radius: 3px;
       margin-top: 15px;
-      background: #333;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: limegreen;
+      border-radius: 3px;
+      transition: width 0.4s;
+    }
+
+    .unlock-text {
+      margin: 8px 0;
     }
 
     .unlock-btn {
-      margin-top: 20px;
-      width: 100%;
+      margin-top: 1rem;
       background: #555;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: none;
       color: #ccc;
       cursor: not-allowed;
     }
 
     .unlock-btn.active {
       background: #28a745;
-      color: #fff;
+      color: white;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
+  <!-- Background Video -->
+  <video class="video-bg" autoplay loop muted>
+    <source src="your-background-video.mp4" type="video/mp4">
+  </video>
+
+  <div class="container">
     <h2>Unlock Link</h2>
     <p>Complete the actions and unlock the link</p>
 
-    <button class="btn" onclick="markComplete(0)">
-      <span><strong>▶️ Subscribe On YouTube</strong></span>
-    </button>
+    <button class="action-btn youtube" onclick="completeAction(0)">▶️ Subscribe On YouTube</button>
+    <button class="action-btn comment" onclick="completeAction(1)">👍 Like & Comment on Video</button>
+    <button class="action-btn telegram" onclick="completeAction(2)">📢 Join on Telegram</button>
 
-    <button class="btn" onclick="markComplete(1)">
-      <span><strong>👍 Like & Comment on Video</strong></span>
-    </button>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="unlock-text" id="unlockText">unlock progress 0/3</div>
 
-    <button class="btn telegram" onclick="markComplete(2)">
-      <span><strong>📢 Join on Telegram</strong></span>
-    </button>
-
-    <progress id="progressBar" value="0" max="3"></progress>
-    <p id="progressText">unlock progress 0/3</p>
-
-    <button id="unlockBtn" class="unlock-btn" disabled>🔒 Unlock Link</button>
+    <button class="action-btn unlock-btn" id="unlockBtn" disabled>🔒 Unlock Link</button>
   </div>
 
   <script>
-    const actions = [false, false, false]; // 3 actions
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
+    let progress = 0;
+    const total = 3;
+    const progressFill = document.getElementById('progressFill');
+    const unlockText = document.getElementById('unlockText');
     const unlockBtn = document.getElementById('unlockBtn');
 
-    const url = new URLSearchParams(window.location.search);
-    const target = decodeURIComponent(url.get('target') || '');
+    function completeAction(index) {
+      const buttons = document.querySelectorAll('.action-btn');
+      const btn = buttons[index];
+      if (!btn.classList.contains('done')) {
+        btn.classList.add('done');
+        btn.style.opacity = '0.6';
+        progress++;
+        const percent = (progress / total) * 100;
+        progressFill.style.width = percent + '%';
+        unlockText.innerText = `unlock progress ${progress}/3`;
 
-    function markComplete(index) {
-      actions[index] = true;
-      updateProgress();
-    }
-
-    function updateProgress() {
-      const completed = actions.filter(Boolean).length;
-      progressBar.value = completed;
-      progressText.innerText = `unlock progress ${completed}/3`;
-
-      if (completed === 3) {
-        unlockBtn.disabled = false;
-        unlockBtn.classList.add('active');
-        unlockBtn.innerText = '✅ Unlock Now';
-        unlockBtn.onclick = () => {
-          if (target) window.location.href = target;
-        };
+        if (progress === total) {
+          unlockBtn.disabled = false;
+          unlockBtn.classList.add('active');
+          unlockBtn.innerText = '🔓 Unlock Link';
+          unlockBtn.onclick = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const target = urlParams.get('target');
+            if (target) {
+              window.open(target, '_blank');
+            }
+          };
+        }
       }
     }
   </script>
-
 </body>
 </html>
