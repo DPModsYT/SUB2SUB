@@ -1,172 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Unlock Link</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unlock Page</title>
   <style>
     * {
+      box-sizing: border-box;
+    }
+    html, body {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    body, html {
+      font-family: Arial, sans-serif;
       height: 100%;
       overflow: hidden;
-    }
-
-    body {
-      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: #fff;
     }
-
-    /* Fullscreen background video */
-    .video-bg {
+    video.bg-video {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       object-fit: cover;
       z-index: -1;
-      opacity: 0.3;
     }
-
-    /* Centered glass container */
-    .container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 12px;
+    .glass-box {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
       padding: 2rem;
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      text-align: center;
+      max-width: 90%;
+      width: 400px;
     }
-
-    h2 {
-      font-size: 1.8em;
-      margin-bottom: 0.5em;
+    .glass-box h2 {
+      margin-top: 0;
     }
-
-    .action-btn {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
-      padding: 12px;
-      font-size: 1em;
-      font-weight: bold;
-      color: white;
+    button {
+      background-color: #00c853;
       border: none;
       border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .youtube { background: #ff0000; }
-    .youtube:hover { background: #cc0000; }
-
-    .comment { background: #e53935; }
-    .comment:hover { background: #c62828; }
-
-    .telegram { background: #0088cc; }
-    .telegram:hover { background: #006fa1; }
-
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      background: #555;
-      border-radius: 3px;
-      margin-top: 15px;
-    }
-
-    .progress-fill {
-      width: 0%;
-      height: 100%;
-      background: limegreen;
-      border-radius: 3px;
-      transition: width 0.4s;
-    }
-
-    .unlock-text {
-      margin: 8px 0;
-    }
-
-    .unlock-btn {
-      margin-top: 1rem;
-      background: #555;
-      color: #ccc;
-      cursor: not-allowed;
-    }
-
-    .unlock-btn.active {
-      background: #28a745;
+      padding: 10px 20px;
+      margin: 10px;
       color: white;
+      font-size: 1rem;
       cursor: pointer;
+    }
+    button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
     }
   </style>
 </head>
 <body>
-
-  <!-- Background Video -->
-  <video class="video-bg" autoplay loop muted>
-    <source src="https://motionbgs.com/media/5535/itachi.960x540.mp4" type="video/mp4">
+  <video class="bg-video" autoplay loop muted>
+    <source src="https://motionbgs.com/media/5535/itachi.960x540.mp4" type="video/mp4" />
   </video>
-
-  <div class="container">
-    <h2>Unlock Link</h2>
-    <p>Complete the actions and unlock the link</p>
-
-    <button class="action-btn youtube" onclick="completeAction(0)">▶️ Subscribe On YouTube</button>
-    <button class="action-btn comment" onclick="completeAction(1)">👍 Like & Comment on Video</button>
-    <button class="action-btn telegram" onclick="completeAction(2)">📢 Join on Telegram</button>
-
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-    <div class="unlock-text" id="unlockText">unlock progress 0/3</div>
-
-    <button class="action-btn unlock-btn" id="unlockBtn" disabled>🔒 Unlock Link</button>
+  <div class="glass-box">
+    <h2>Complete Tasks to Unlock</h2>
+    <button id="subBtn">Subscribe YouTube</button><br />
+    <button id="likeBtn">Like & Comment</button><br />
+    <button id="tgBtn">Join Telegram</button><br />
+    <button id="unlockBtn" disabled>Unlock Link</button>
   </div>
 
   <script>
-    let progress = 0;
-    const total = 3;
-    const progressFill = document.getElementById('progressFill');
-    const unlockText = document.getElementById('unlockText');
-    const unlockBtn = document.getElementById('unlockBtn');
+    const urlParams = new URLSearchParams(window.location.search);
+    const yt = urlParams.get('youtube');
+    const tg = urlParams.get('telegram');
+    const target = urlParams.get('target');
 
-    function completeAction(index) {
-      const buttons = document.querySelectorAll('.action-btn');
-      const btn = buttons[index];
-      if (!btn.classList.contains('done')) {
-        btn.classList.add('done');
-        btn.style.opacity = '0.6';
-        progress++;
-        const percent = (progress / total) * 100;
-        progressFill.style.width = percent + '%';
-        unlockText.innerText = `unlock progress ${progress}/3`;
+    let subDone = false;
+    let likeDone = false;
+    let tgDone = false;
 
-        if (progress === total) {
-          unlockBtn.disabled = false;
-          unlockBtn.classList.add('active');
-          unlockBtn.innerText = '🔓 Unlock Link';
-          unlockBtn.onclick = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const target = urlParams.get('target');
-            if (target) {
-              window.open(target, '_blank');
-            }
-          };
-        }
+    const updateUnlock = () => {
+      if (subDone && likeDone && tgDone) {
+        document.getElementById('unlockBtn').disabled = false;
       }
-    }
+    };
+
+    document.getElementById('subBtn').onclick = () => {
+      window.open(yt, '_blank');
+      subDone = true;
+      document.getElementById('subBtn').innerText = 'Subscribed';
+      document.getElementById('subBtn').disabled = true;
+      updateUnlock();
+    };
+
+    document.getElementById('likeBtn').onclick = () => {
+      window.open(yt, '_blank');
+      likeDone = true;
+      document.getElementById('likeBtn').innerText = 'Liked & Commented';
+      document.getElementById('likeBtn').disabled = true;
+      updateUnlock();
+    };
+
+    document.getElementById('tgBtn').onclick = () => {
+      window.open(tg, '_blank');
+      tgDone = true;
+      document.getElementById('tgBtn').innerText = 'Joined';
+      document.getElementById('tgBtn').disabled = true;
+      updateUnlock();
+    };
+
+    document.getElementById('unlockBtn').onclick = () => {
+      window.location.href = target;
+    };
   </script>
 </body>
 </html>
