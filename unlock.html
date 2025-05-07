@@ -1,113 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Unlock Page</title>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      color: white;
-    }
-    .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(18, 18, 18, 0.7);
-      backdrop-filter: blur(8px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
-    }
-    .task-box {
-      background: rgba(255,255,255,0.1);
-      padding: 1.5rem;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-    button {
-      margin-top: 1rem;
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #00c853;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .hidden {
-      display: none;
-    }
-    a.task-link {
-      display: block;
-      margin: 0.5rem 0;
-      color: #90caf9;
-      text-decoration: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlock Content | SubZunlock</title>
+    <style>
+        :root {
+            --bg-dark: #1a1a1a;
+            --text-dark: #ffffff;
+            --accent: #ff4757;
+            --card-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-dark);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .req-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: #ffffff0d;
+            border-radius: 5px;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .locked-content {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <video autoplay muted loop id="bgvideo" style="position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%;">
-    <source src="https://motionbgs.com/media/5535/itachi.960x540.mp4" type="video/mp4">
-  </video>
+    <h1>Unlock Premium Content</h1>
+    <p>Complete these requirements to access the content:</p>
 
-  <div class="overlay">
-    <div class="task-box">
-      <h2>Complete the Task to Unlock</h2>
-      <div id="tasks"></div>
-      <button onclick="showLink()">Unlock Link</button>
-      <div id="unlocked" class="hidden">
-        <p>Unlocked Link:</p>
-        <input id="targetInput" readonly style="width: 90%;"/><br>
-        <button onclick="copyTarget()">Copy</button>
-      </div>
+    <div id="requirementsContainer" class="requirements-grid"></div>
+
+    <button id="unlockButton" disabled>UNLOCK CONTENT</button>
+    
+    <div id="unlockedContent" class="locked-content">
+        <h2>Content Unlocked! Redirecting...</h2>
     </div>
-  </div>
 
-  <script> 
-    const params = new URLSearchParams(window.location.hash.slice(1));
-    const channel = params.get('channel');
-    const like = params.get('like');
-    const comment = params.get('comment');
-    const telegram = params.get('telegram');
-    const target = params.get('target');
+    <script>
+        // Get URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const youtubeUrl = decodeURIComponent(params.get('yt'));
+        const destUrl = decodeURIComponent(params.get('dest'));
+        const requirements = params.get('req')?.split(',') || [];
 
-    const taskList = document.getElementById('tasks');
+        // Extract YouTube Channel ID
+        const channelId = youtubeUrl.match(/channel\/([a-zA-Z0-9_-]+)/)?.[1] || '';
 
-    if (channel) {
-      taskList.innerHTML += `<a class="task-link" href="${channel}" target="_blank">Subscribe to YouTube Channel</a>`;
-    }
-    if (like) {
-      taskList.innerHTML += `<a class="task-link" href="${like}" target="_blank">Like the Video (Optional)</a>`;
-    }
-    if (comment) {
-      taskList.innerHTML += `<a class="task-link" href="${comment}" target="_blank">Comment on the Video (Optional)</a>`;
-    }
-    if (telegram) {
-      taskList.innerHTML += `<a class="task-link" href="${telegram}" target="_blank">Join Telegram Group (Optional)</a>`;
-    }
+        // Create requirement checkboxes
+        const requirementsContainer = document.getElementById('requirementsContainer');
+        const requirementConfig = {
+            subscribe: { text: 'Subscribe to YouTube Channel', mandatory: true },
+            secondSub: { text: 'Subscribe to Second Channel', mandatory: true },
+            likeSub: { text: 'Like & Subscribe', mandatory: true },
+            bell: { text: 'Hit Bell Icon', mandatory: true },
+            likeComment: { text: 'Like & Comment', mandatory: false },
+            followInsta: { text: 'Follow Instagram', mandatory: false },
+            joinTelegram: { text: 'Join Telegram', mandatory: false },
+            joinDiscord: { text: 'Join Discord', mandatory: false }
+        };
 
-    function showLink() {
-      document.getElementById('targetInput').value = target;
-      document.getElementById('unlocked').classList.remove('hidden');
-    }
+        requirements.forEach(req => {
+            const div = document.createElement('div');
+            div.className = 'req-item';
+            div.innerHTML = `
+                <input type="checkbox" id="${req}" disabled>
+                <label for="${req}">${requirementConfig[req]?.text || req}</label>
+            `;
+            requirementsContainer.appendChild(div);
+        });
 
-    function copyTarget() {
-      const input = document.getElementById('targetInput');
-      input.select();
-      document.execCommand('copy');
-      alert('Link copied to clipboard!');
-    }
-  </script>
+        // Unlock logic
+        let completedRequirements = 0;
+        
+        document.getElementById('unlockButton').addEventListener('click', () => {
+            window.location.href = destUrl;
+        });
+
+        function checkRequirements() {
+            // Add your verification logic here for each requirement
+            // For demo purposes, auto-complete after 2 seconds
+            setTimeout(() => {
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                completedRequirements = requirements.length;
+                updateUnlockButton();
+            }, 2000);
+        }
+
+        function updateUnlockButton() {
+            const unlockButton = document.getElementById('unlockButton');
+            if (completedRequirements >= requirements.length) {
+                unlockButton.disabled = false;
+                unlockButton.textContent = "ACCESS CONTENT NOW";
+                document.getElementById('unlockedContent').style.display = 'block';
+            }
+        }
+
+        // Initialize verification
+        checkRequirements();
+    </script>
 </body>
 </html>
