@@ -87,7 +87,7 @@
       if (tg) params.set('telegram', tg);
       params.set('target', target);
 
-      const unlockURL = `unlock.html?${params.toString()}`;
+      const unlockURL = `unlock.html#${params.toString()}`;
       const fullLink = `${window.location.origin}/${unlockURL}`;
 
       document.getElementById('result').innerHTML = `
